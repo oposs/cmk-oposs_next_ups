@@ -77,11 +77,18 @@ metric_oposs_next_battery_pct = Metric(
     color=Color.GREEN,
 )
 
-metric_oposs_next_backup_time = Metric(
-    name="oposs_next_backup_time",
-    title=Title("Backup Time"),
+metric_oposs_next_time_remaining = Metric(
+    name="oposs_next_time_remaining",
+    title=Title("Battery Time Remaining"),
     unit=unit_seconds,
     color=Color.BLUE,
+)
+
+metric_oposs_next_time_on_battery = Metric(
+    name="oposs_next_time_on_battery",
+    title=Title("Time On Battery"),
+    unit=unit_seconds,
+    color=Color.DARK_BLUE,
 )
 
 # Graphs
@@ -137,10 +144,16 @@ graph_oposs_next_battery_pct = Graph(
     minimal_range=MinimalRange(lower=0, upper=100),
 )
 
-graph_oposs_next_backup_time = Graph(
-    name="oposs_next_backup_time",
-    title=Title("NextUPS Backup Time"),
-    simple_lines=["oposs_next_backup_time"],
+graph_oposs_next_time_remaining = Graph(
+    name="oposs_next_time_remaining",
+    title=Title("NextUPS Battery Time Remaining"),
+    simple_lines=["oposs_next_time_remaining"],
+)
+
+graph_oposs_next_time_on_battery = Graph(
+    name="oposs_next_time_on_battery",
+    title=Title("NextUPS Time On Battery"),
+    simple_lines=["oposs_next_time_on_battery"],
 )
 
 # Perfometers
