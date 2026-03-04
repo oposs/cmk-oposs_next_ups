@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### New
 
+### Changed
+
+### Fixed
+
+## 0.1.0 - 2026-03-04
+### New
 - Initial migration from oegig-plugins to Checkmk 2.3.x v2 API
 - Data-driven architecture: targets list + closure generates ~44 check plugins
 - Graphing definitions for all metric types (temperature, voltage, current,
@@ -17,11 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Metric names prefixed with `oposs_next_` for namespace isolation
 - MKP packaging via oposs/mkp-builder GitHub Action
 
-### Changed
-
 ### Fixed
-
 - "Time On Battery" OID corrected from `s.0` to `2.0` (upsSecondsOnBattery)
 - "Output True Power" render unit corrected from kVA to kW (true/active power)
 - "Bypass True Power" render unit corrected from kVA to kW
 - Battery State map now includes state `0` to prevent KeyError
+
+
