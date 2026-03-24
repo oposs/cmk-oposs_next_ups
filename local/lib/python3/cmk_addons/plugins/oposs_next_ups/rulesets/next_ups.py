@@ -78,7 +78,7 @@ def _upper_lower_levels(title_upper, title_lower, unit, default_upper, default_l
 rule_spec_oposs_next_ups_battery_temperature = CheckParameters(
     name="oposs_next_ups_battery_temperature",
     title=Title("NextUPS Battery Temperature"),
-    topic=Topic.ENVIRONMENT,
+    topic=Topic.ENVIRONMENTAL,
     parameter_form=lambda: _upper_levels("Upper levels", "\u00b0C", (60.0, 70.0)),
     condition=HostCondition(),
 )
