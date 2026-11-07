@@ -1,11 +1,7 @@
-#!/usr/bin/env python3
-
 from collections import namedtuple
 
 from cmk.agent_based.v2 import (
     CheckPlugin,
-    CheckResult,
-    DiscoveryResult,
     Result,
     Service,
     SimpleSNMPSection,
@@ -14,6 +10,10 @@ from cmk.agent_based.v2 import (
     check_levels,
     startswith,
 )
+
+# Create release PR writes the released version here (version_files in
+# .github/repo-infra.json)
+__version__ = "0.1.2"
 
 # SNMP OID bases
 upsMIB = ".1.3.6.1.2.1.33.1"  # https://www.circitor.fr/Mibs/Html/U/UPS-MIB.php
@@ -59,8 +59,7 @@ targets = [
         "keys": ["upsAlarmPresent"],
         "result": lambda obj, cfg: Result(
             state=State.OK if obj.upsAlarmPresent == "0" else State.CRIT,
-            summary="%s Alarms present - check online status!"
-            % obj.upsAlarmPresent
+            summary=f"{obj.upsAlarmPresent} Alarms present - check online status!"
             if obj.upsAlarmPresent != "0"
             else "No Alarms",
         ),
@@ -78,7 +77,7 @@ targets = [
             else State.OK
             if obj.state == "2"
             else State.CRIT,
-            summary=BATTERY_STATE_MAP.get(obj.state, "unknown(%s)" % obj.state),
+            summary=BATTERY_STATE_MAP.get(obj.state, f"unknown({obj.state})"),
         ),
     },
     # --- Battery Temperature ---
@@ -88,7 +87,7 @@ targets = [
         "keys": ["value"],
         "scale": 0.1,
         "metric_name": "oposs_next_temperature",
-        "render_func": lambda v: "%.0f \u00b0C" % v,
+        "render_func": lambda v: f"{v:.0f} \u00b0C",
         "default_params": {"levels_upper": ("fixed", (60.0, 70.0))},
         "boundaries": (0.0, 100.0),
         "ruleset_name": "oposs_next_ups_battery_temperature",
@@ -96,12 +95,12 @@ targets = [
     # --- Input Voltage (per-phase) ---
     *(
         {
-            "name": "Phase %s Input Voltage" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".4.5.1", oids=["3.%s" % oid]),
+            "name": f"Phase {name} Input Voltage",
+            "query": SNMPTree(base=nextUpsMIB + ".4.5.1", oids=[f"3.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "metric_name": "oposs_next_voltage",
-            "render_func": lambda v: "%.0f V" % v,
+            "render_func": lambda v: f"{v:.0f} V",
             "default_params": {"levels_lower": ("fixed", (210.0, 180.0))},
             "boundaries": (0.0, 250.0),
             "ruleset_name": "oposs_next_ups_input_voltage",
@@ -111,13 +110,13 @@ targets = [
     # --- Input Frequency (per-phase, skip_zero) ---
     *(
         {
-            "name": "Phase %s Input Frequency" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".4.5.1", oids=["2.%s" % oid]),
+            "name": f"Phase {name} Input Frequency",
+            "query": SNMPTree(base=nextUpsMIB + ".4.5.1", oids=[f"2.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "skip_zero": True,
             "metric_name": "oposs_next_frequency",
-            "render_func": lambda v: "%.2f Hz" % v,
+            "render_func": lambda v: f"{v:.2f} Hz",
             "default_params": {
                 "levels_lower": ("fixed", (49.0, 48.0)),
                 "levels_upper": ("fixed", (51.0, 52.0)),
@@ -130,12 +129,12 @@ targets = [
     # --- Input Current (per-phase, info only) ---
     *(
         {
-            "name": "Phase %s Input Current" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".4.5.1", oids=["4.%s" % oid]),
+            "name": f"Phase {name} Input Current",
+            "query": SNMPTree(base=nextUpsMIB + ".4.5.1", oids=[f"4.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "metric_name": "oposs_next_current",
-            "render_func": lambda v: "%.0f A" % v,
+            "render_func": lambda v: f"{v:.0f} A",
             "default_params": {},
             "boundaries": (0.0, 1000.0),
         }
@@ -144,12 +143,12 @@ targets = [
     # --- Output Voltage (per-phase) ---
     *(
         {
-            "name": "Phase %s Output Voltage" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=["2.%s" % oid]),
+            "name": f"Phase {name} Output Voltage",
+            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=[f"2.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "metric_name": "oposs_next_voltage",
-            "render_func": lambda v: "%.0f V" % v,
+            "render_func": lambda v: f"{v:.0f} V",
             "default_params": {"levels_lower": ("fixed", (210.0, 180.0))},
             "boundaries": (0.0, 250.0),
             "ruleset_name": "oposs_next_ups_output_voltage",
@@ -159,13 +158,13 @@ targets = [
     # --- Output Frequency (per-phase, skip_zero) ---
     *(
         {
-            "name": "Phase %s Output Frequency" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=["9.%s" % oid]),
+            "name": f"Phase {name} Output Frequency",
+            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=[f"9.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "skip_zero": True,
             "metric_name": "oposs_next_frequency",
-            "render_func": lambda v: "%.2f Hz" % v,
+            "render_func": lambda v: f"{v:.2f} Hz",
             "default_params": {
                 "levels_lower": ("fixed", (49.0, 48.0)),
                 "levels_upper": ("fixed", (51.0, 52.0)),
@@ -178,12 +177,12 @@ targets = [
     # --- Output Current (per-phase, info only) ---
     *(
         {
-            "name": "Phase %s Output Current" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=["3.%s" % oid]),
+            "name": f"Phase {name} Output Current",
+            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=[f"3.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "metric_name": "oposs_next_current",
-            "render_func": lambda v: "%.0f A" % v,
+            "render_func": lambda v: f"{v:.0f} A",
             "default_params": {},
             "boundaries": (0.0, 1000.0),
         }
@@ -192,8 +191,8 @@ targets = [
     # --- Output Apparent Power (per-phase, info only) ---
     *(
         {
-            "name": "Phase %s Output Apparent Power" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=["4.%s" % oid]),
+            "name": f"Phase {name} Output Apparent Power",
+            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=[f"4.{oid}"]),
             "keys": ["value"],
             "scale": 100.0,
             "metric_name": "oposs_next_apparent_power",
@@ -206,8 +205,8 @@ targets = [
     # --- Output True Power (per-phase, info only; FIXED: kW not kVA) ---
     *(
         {
-            "name": "Phase %s Output True Power" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=["5.%s" % oid]),
+            "name": f"Phase {name} Output True Power",
+            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=[f"5.{oid}"]),
             "keys": ["value"],
             "scale": 100.0,
             "metric_name": "oposs_next_true_power",
@@ -220,12 +219,12 @@ targets = [
     # --- Output Load (per-phase) ---
     *(
         {
-            "name": "Phase %s Output Load" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=["7.%s" % oid]),
+            "name": f"Phase {name} Output Load",
+            "query": SNMPTree(base=nextUpsMIB + ".5.7.1", oids=[f"7.{oid}"]),
             "keys": ["value"],
             "scale": 1.0,
             "metric_name": "oposs_next_load_pct",
-            "render_func": lambda v: "%.0f %%" % v,
+            "render_func": lambda v: f"{v:.0f} %",
             "default_params": {"levels_upper": ("fixed", (80.0, 90.0))},
             "boundaries": (0.0, 500.0),
             "ruleset_name": "oposs_next_ups_output_load",
@@ -235,12 +234,12 @@ targets = [
     # --- Bypass Voltage (per-phase) ---
     *(
         {
-            "name": "Phase %s Bypass Voltage" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".6.3.1", oids=["2.%s" % oid]),
+            "name": f"Phase {name} Bypass Voltage",
+            "query": SNMPTree(base=nextUpsMIB + ".6.3.1", oids=[f"2.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "metric_name": "oposs_next_voltage",
-            "render_func": lambda v: "%.0f V" % v,
+            "render_func": lambda v: f"{v:.0f} V",
             "default_params": {"levels_lower": ("fixed", (210.0, 180.0))},
             "boundaries": (0.0, 250.0),
             "ruleset_name": "oposs_next_ups_bypass_voltage",
@@ -250,12 +249,12 @@ targets = [
     # --- Bypass Current (per-phase, info only) ---
     *(
         {
-            "name": "Phase %s Bypass Current" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".6.3.1", oids=["3.%s" % oid]),
+            "name": f"Phase {name} Bypass Current",
+            "query": SNMPTree(base=nextUpsMIB + ".6.3.1", oids=[f"3.{oid}"]),
             "keys": ["value"],
             "scale": 0.1,
             "metric_name": "oposs_next_current",
-            "render_func": lambda v: "%.0f A" % v,
+            "render_func": lambda v: f"{v:.0f} A",
             "default_params": {},
             "boundaries": (0.0, 1000.0),
         }
@@ -264,8 +263,8 @@ targets = [
     # --- Bypass True Power (per-phase, info only; kW not kVA) ---
     *(
         {
-            "name": "Phase %s Bypass True Power" % name,
-            "query": SNMPTree(base=nextUpsMIB + ".6.3.1", oids=["5.%s" % oid]),
+            "name": f"Phase {name} Bypass True Power",
+            "query": SNMPTree(base=nextUpsMIB + ".6.3.1", oids=[f"5.{oid}"]),
             "keys": ["value"],
             "scale": 100.0,
             "metric_name": "oposs_next_true_power",
@@ -282,7 +281,7 @@ targets = [
         "keys": ["value"],
         "scale": 0.1,
         "metric_name": "oposs_next_voltage",
-        "render_func": lambda v: "%.1f V" % v,
+        "render_func": lambda v: f"{v:.1f} V",
         "default_params": {},
         "boundaries": (0.0, 2000.0),
     },
@@ -293,7 +292,7 @@ targets = [
         "keys": ["value"],
         "scale": 0.1,
         "metric_name": "oposs_next_current",
-        "render_func": lambda v: "%.1f A" % v,
+        "render_func": lambda v: f"{v:.1f} A",
         "default_params": {},
         "boundaries": (-300.0, 300.0),
     },
@@ -304,7 +303,7 @@ targets = [
         "keys": ["value"],
         "scale": 1.0,
         "metric_name": "oposs_next_battery_pct",
-        "render_func": lambda v: "%.0f %%" % v,
+        "render_func": lambda v: f"{v:.0f} %",
         "default_params": {"levels_lower": ("fixed", (15.0, 10.0))},
         "boundaries": (0.0, 100.0),
         "ruleset_name": "oposs_next_ups_battery_charge",
@@ -343,7 +342,7 @@ targets = [
 
 def _make_plugins(cfg):
     """Generate SimpleSNMPSection + CheckPlugin module-level variables."""
-    check_key = "oposs_next_ups_%s" % cfg["name"].lower().replace(" ", "_")
+    check_key = "oposs_next_ups_{}".format(cfg["name"].lower().replace(" ", "_"))
     obj_class = namedtuple(check_key, cfg["keys"])
 
     def parse_fn(string_table):
@@ -388,14 +387,14 @@ def _make_plugins(cfg):
         if "ruleset_name" in cfg:
             cp_kwargs["check_ruleset_name"] = cfg["ruleset_name"]
 
-    globals()["snmp_section_%s" % check_key] = SimpleSNMPSection(
+    globals()[f"snmp_section_{check_key}"] = SimpleSNMPSection(
         name=check_key,
         detect=DETECT_NEXT_UPS,
         parse_function=parse_fn,
         fetch=cfg["query"],
     )
 
-    globals()["check_plugin_%s" % check_key] = CheckPlugin(
+    globals()[f"check_plugin_{check_key}"] = CheckPlugin(
         name=check_key,
         sections=[check_key],
         service_name=cfg["name"],
