@@ -11,6 +11,10 @@ from cmk.agent_based.v2 import (
     startswith,
 )
 
+# Create release PR writes the released version here (version_files in
+# .github/repo-infra.json)
+__version__ = "0.1.2"
+
 # SNMP OID bases
 upsMIB = ".1.3.6.1.2.1.33.1"  # https://www.circitor.fr/Mibs/Html/U/UPS-MIB.php
 nextUpsMIB = ".1.3.6.1.4.1.21111.1.1"  # https://www.circitor.fr/Mibs/Html/N/NextUPSSystems.php
