@@ -11,7 +11,6 @@ A section is filled the way Checkmk fills it: every walk entry at or below
 """
 
 import importlib.util
-import json
 import math
 import pathlib
 import re
@@ -43,7 +42,7 @@ WALK = {
     UPS + ".2.5.0": "2720",                     # upsBatteryVoltage, 0.1 V DC
     UPS + ".2.6.0": "0",                        # upsBatteryCurrent, 0.1 A DC
 }
-for _phase, _i in INDEX.items():
+for _i in INDEX.values():
     WALK.update({
         f"{NEXT}.4.5.1.2.{_i}": "500",          # upsInFrequency, 0.1 Hz
         f"{NEXT}.4.5.1.3.{_i}": "2301",         # upsInVoltage, 0.1 V

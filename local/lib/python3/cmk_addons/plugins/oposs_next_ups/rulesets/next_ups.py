@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-from cmk.rulesets.v1 import Title, Help
+from cmk.rulesets.v1 import Title
 from cmk.rulesets.v1.form_specs import (
     DefaultValue,
     DictElement,
@@ -21,7 +19,7 @@ def _upper_levels(title, unit, default):
         elements={
             "levels_upper": DictElement(
                 parameter_form=SimpleLevels(
-                    title=Title("%s" % title),
+                    title=Title(f"{title}"),
                     level_direction=LevelDirection.UPPER,
                     form_spec_template=Float(unit_symbol=unit),
                     prefill_fixed_levels=DefaultValue(default),
@@ -37,7 +35,7 @@ def _lower_levels(title, unit, default):
         elements={
             "levels_lower": DictElement(
                 parameter_form=SimpleLevels(
-                    title=Title("%s" % title),
+                    title=Title(f"{title}"),
                     level_direction=LevelDirection.LOWER,
                     form_spec_template=Float(unit_symbol=unit),
                     prefill_fixed_levels=DefaultValue(default),
@@ -53,7 +51,7 @@ def _upper_lower_levels(title_upper, title_lower, unit, default_upper, default_l
         elements={
             "levels_upper": DictElement(
                 parameter_form=SimpleLevels(
-                    title=Title("%s" % title_upper),
+                    title=Title(f"{title_upper}"),
                     level_direction=LevelDirection.UPPER,
                     form_spec_template=Float(unit_symbol=unit),
                     prefill_fixed_levels=DefaultValue(default_upper),
@@ -62,7 +60,7 @@ def _upper_lower_levels(title_upper, title_lower, unit, default_upper, default_l
             ),
             "levels_lower": DictElement(
                 parameter_form=SimpleLevels(
-                    title=Title("%s" % title_lower),
+                    title=Title(f"{title_lower}"),
                     level_direction=LevelDirection.LOWER,
                     form_spec_template=Float(unit_symbol=unit),
                     prefill_fixed_levels=DefaultValue(default_lower),
