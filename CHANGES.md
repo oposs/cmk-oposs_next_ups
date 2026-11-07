@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   Voltage or Battery Current, showed a crash report when the UPS sent a
   value that is not a number. It now goes UNKNOWN with "the UPS sent no
   number" and the value it got.
+- Time On Battery showed short times in hours with one decimal, so two
+  minutes on battery read "0.0h (warn/crit at 0.0h/0.1h)". It now shows
+  minutes and seconds, such as "2 minutes 0 seconds".
 
 ## 0.1.2 - 2026-04-27
 ### Fixed

@@ -8,6 +8,7 @@ from cmk.agent_based.v2 import (
     SNMPTree,
     State,
     check_levels,
+    render,
     startswith,
 )
 
@@ -327,7 +328,7 @@ targets = [
         "keys": ["value"],
         "scale": 1.0,
         "metric_name": "oposs_next_time_on_battery",
-        "render_func": lambda v: "%.1fh" % (v / 3600.0),
+        "render_func": render.timespan,
         "default_params": {"levels_upper": ("fixed", (60.0, 300.0))},
         "boundaries": (0.0, 3600.0),
         "ruleset_name": "oposs_next_ups_time_on_battery",
