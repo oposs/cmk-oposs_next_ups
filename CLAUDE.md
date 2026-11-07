@@ -9,7 +9,8 @@ Migrated from oegig-plugins to Checkmk 2.3.x v2 API.
 - `local/lib/python3/cmk_addons/plugins/oposs_next_ups/graphing/next_ups.py` — metric, graph, perfometer definitions
 - `local/lib/python3/cmk_addons/plugins/oposs_next_ups/rulesets/next_ups.py` — WATO ruleset definitions
 - `.mkp-builder.ini` — MKP packaging config
-- `.github/workflows/release.yml` — automated release workflow
+- `.github/workflows/` — repo-infra callers: `ci.yml` (ruff, pytest, MKP build), `changelog.yml`, and the release flow (`release-pr.yml` → `release-build.yml` → `release-publish.yml`); `.github/repo-infra.json` lists the version files and release assets
+- `tests/` — pytest suite against the real Checkmk 2.3.0 API (`tests/conftest.py` fetches it into `.cmk-api/`)
 
 ## Architecture
 
