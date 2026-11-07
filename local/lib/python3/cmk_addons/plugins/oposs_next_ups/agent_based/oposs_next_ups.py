@@ -8,6 +8,7 @@ from cmk.agent_based.v2 import (
     SNMPTree,
     State,
     check_levels,
+    render,
     startswith,
 )
 
@@ -327,7 +328,7 @@ targets = [
         "keys": ["value"],
         "scale": 1.0,
         "metric_name": "oposs_next_time_on_battery",
-        "render_func": lambda v: "%.1fh" % (v / 3600.0),
+        "render_func": render.timespan,
         "default_params": {"levels_upper": ("fixed", (60.0, 300.0))},
         "boundaries": (0.0, 3600.0),
         "ruleset_name": "oposs_next_ups_time_on_battery",
@@ -367,10 +368,18 @@ def _make_plugins(cfg):
         def check_fn(params, section):
             if not section:
                 return
-            if cfg.get("skip_zero") and int(section.value) == 0:
+            try:
+                raw = float(section.value)
+            except ValueError:
+                yield Result(
+                    state=State.UNKNOWN,
+                    summary=f"{cfg['name']}: the UPS sent no number ({section.value!r})",
+                )
+                return
+            if cfg.get("skip_zero") and raw == 0:
                 value = float("nan")
             else:
-                value = cfg.get("scale", 1.0) * float(section.value)
+                value = cfg.get("scale", 1.0) * raw
             yield from check_levels(
                 value=value,
                 levels_upper=params.get("levels_upper"),

@@ -447,22 +447,26 @@ def test_a_single_phase_ups_gets_only_the_rs_services(plugins):
         assert discovered == expected, service
 
 
-@pytest.mark.xfail(strict=True, raises=ValueError, reason="BUG: a non-numeric SNMP value crashes the check with ValueError")
-@pytest.mark.parametrize("service", ["Battery Temperature", "Phase RS Input Frequency"])
-def test_a_non_numeric_value_does_not_crash(plugins, service):
-    _disc, out = _run(plugins, service, **{_oid(plugins, service): ""})
-    assert all(r.state == State.UNKNOWN for r in _results(out))
+@pytest.mark.parametrize("raw", ["", "NULL"])
+@pytest.mark.parametrize("service", ["Battery Temperature", "Phase RS Input Frequency", "Battery Current"])
+def test_a_non_numeric_value_is_unknown(plugins, service, raw):
+    _disc, out = _run(plugins, service, **{_oid(plugins, service): raw})
+    assert out == [Result(state=State.UNKNOWN, summary=f"{service}: the UPS sent no number ({raw!r})")]
 
 
 # ---------------------------------------------------------------------------
 # Display
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="BUG: Time On Battery shows 2 minutes as 0.0h and its levels as 0.0h/0.1h")
-def test_time_on_battery_shows_minutes(plugins):
-    _disc, out = _run(plugins, "Time On Battery", **{UPS + ".2.2.0": "120"})
-    (result,) = _results(out)
-    assert "0.0h" not in result.summary
+@pytest.mark.parametrize("raw, summary", [
+    ("0", "Time On Battery: 0 seconds"),
+    ("45", "Time On Battery: 45 seconds"),
+    ("120", "Time On Battery: 2 minutes 0 seconds (warn/crit at 1 minute 0 seconds/5 minutes 0 seconds)"),
+    ("3725", "Time On Battery: 1 hour 2 minutes (warn/crit at 1 minute 0 seconds/5 minutes 0 seconds)"),
+])
+def test_time_on_battery_shows_minutes(plugins, raw, summary):
+    _disc, out = _run(plugins, "Time On Battery", **{UPS + ".2.2.0": raw})
+    assert [r.summary for r in _results(out)] == [summary]
 
 
 # ---------------------------------------------------------------------------
