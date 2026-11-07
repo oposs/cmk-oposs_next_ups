@@ -447,11 +447,11 @@ def test_a_single_phase_ups_gets_only_the_rs_services(plugins):
         assert discovered == expected, service
 
 
-@pytest.mark.xfail(strict=True, raises=ValueError, reason="BUG: a non-numeric SNMP value crashes the check with ValueError")
-@pytest.mark.parametrize("service", ["Battery Temperature", "Phase RS Input Frequency"])
-def test_a_non_numeric_value_does_not_crash(plugins, service):
-    _disc, out = _run(plugins, service, **{_oid(plugins, service): ""})
-    assert all(r.state == State.UNKNOWN for r in _results(out))
+@pytest.mark.parametrize("raw", ["", "NULL"])
+@pytest.mark.parametrize("service", ["Battery Temperature", "Phase RS Input Frequency", "Battery Current"])
+def test_a_non_numeric_value_is_unknown(plugins, service, raw):
+    _disc, out = _run(plugins, service, **{_oid(plugins, service): raw})
+    assert out == [Result(state=State.UNKNOWN, summary=f"{service}: the UPS sent no number ({raw!r})")]
 
 
 # ---------------------------------------------------------------------------

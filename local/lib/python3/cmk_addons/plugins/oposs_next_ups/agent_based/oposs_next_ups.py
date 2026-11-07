@@ -367,10 +367,18 @@ def _make_plugins(cfg):
         def check_fn(params, section):
             if not section:
                 return
-            if cfg.get("skip_zero") and int(section.value) == 0:
+            try:
+                raw = float(section.value)
+            except ValueError:
+                yield Result(
+                    state=State.UNKNOWN,
+                    summary=f"{cfg['name']}: the UPS sent no number ({section.value!r})",
+                )
+                return
+            if cfg.get("skip_zero") and raw == 0:
                 value = float("nan")
             else:
-                value = cfg.get("scale", 1.0) * float(section.value)
+                value = cfg.get("scale", 1.0) * raw
             yield from check_levels(
                 value=value,
                 levels_upper=params.get("levels_upper"),
