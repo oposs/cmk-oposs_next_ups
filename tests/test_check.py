@@ -288,7 +288,7 @@ def test_online_ups_is_ok_everywhere(plugins):
     ("Battery Temperature", "Battery Temperature: 25 °C"),
     ("Battery Voltage", "Battery Voltage: 272.0 V"),
     ("Battery Charge Remaining", "Battery Charge Remaining: 100 %"),
-    ("Battery Time Remaining", "Battery Time Remaining: 0.8h"),
+    ("Battery Time Remaining", "Battery Time Remaining: 45 minutes 0 seconds"),
     ("Phase RS Input Voltage", "Phase RS Input Voltage: 230 V"),
     ("Phase RS Input Frequency", "Phase RS Input Frequency: 50.00 Hz"),
     ("Phase ST Output Load", "Phase ST Output Load: 23 %"),
@@ -467,6 +467,19 @@ def test_a_non_numeric_value_is_unknown(plugins, service, raw):
 def test_time_on_battery_shows_minutes(plugins, raw, summary):
     _disc, out = _run(plugins, "Time On Battery", **{UPS + ".2.2.0": raw})
     assert [r.summary for r in _results(out)] == [summary]
+
+
+@pytest.mark.parametrize("raw, summary", [
+    # upsEstimatedMinutesRemaining is in minutes on the wire
+    ("45", "Battery Time Remaining: 45 minutes 0 seconds"),
+    ("20", "Battery Time Remaining: 20 minutes 0 seconds"),
+    ("19", "Battery Time Remaining: 19 minutes 0 seconds (warn/crit below 20 minutes 0 seconds/10 minutes 0 seconds)"),
+    ("90", "Battery Time Remaining: 1 hour 30 minutes"),
+])
+def test_battery_time_remaining_shows_minutes(plugins, raw, summary):
+    _disc, out = _run(plugins, "Battery Time Remaining", **{UPS + ".2.3.0": raw})
+    assert [r.summary for r in _results(out)] == [summary]
+    assert _metrics(out) == {"oposs_next_time_remaining": int(raw) * 60.0}
 
 
 # ---------------------------------------------------------------------------
