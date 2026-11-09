@@ -316,7 +316,7 @@ targets = [
         "keys": ["value"],
         "scale": 60.0,
         "metric_name": "oposs_next_time_remaining",
-        "render_func": lambda v: "%.1fh" % (v / 3600.0),
+        "render_func": render.timespan,
         "default_params": {"levels_lower": ("fixed", (1200.0, 600.0))},
         "boundaries": (0.0, 3600.0),
         "ruleset_name": "oposs_next_ups_battery_time_remaining",

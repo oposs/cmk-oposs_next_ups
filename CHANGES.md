@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Time On Battery showed short times in hours with one decimal, so two
   minutes on battery read "0.0h (warn/crit at 0.0h/0.1h)". It now shows
   minutes and seconds, such as "2 minutes 0 seconds".
+- Battery Time Remaining showed the time in hours with one decimal, so
+  its default warning level of 20 minutes read "0.3h". It now shows
+  minutes and seconds, such as "19 minutes 0 seconds".
 
 ## 0.1.2 - 2026-04-27
 ### Fixed
