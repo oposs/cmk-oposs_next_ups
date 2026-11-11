@@ -12,7 +12,6 @@ A section is filled the way Checkmk fills it: every walk entry at or below
 
 import importlib.util
 import json
-import math
 import pathlib
 import re
 import sys
@@ -414,11 +413,11 @@ def test_info_only_services_have_no_levels(plugins, service):
 
 @pytest.mark.parametrize("service", ["Phase RS Input Frequency", "Phase TR Output Frequency"])
 def test_zero_frequency_is_not_a_level_violation(plugins, service):
-    # skip_zero: a phase without input reads 0 Hz, which would otherwise be CRIT
+    # skip_zero: a phase without input reads 0 Hz, which would otherwise be CRIT.
+    # No metric either: a 0 or NaN point would only put a fake dip in the graph.
     _disc, out = _run(plugins, service, **{_oid(plugins, service): "0"})
-    assert [r.state for r in _results(out)] == [State.OK]
-    (value,) = _metrics(out).values()
-    assert math.isnan(value)
+    assert _results(out) == [Result(state=State.OK, summary=f"{service}: no input")]
+    assert _metrics(out) == {}
 
 
 def test_zero_voltage_is_crit(plugins):

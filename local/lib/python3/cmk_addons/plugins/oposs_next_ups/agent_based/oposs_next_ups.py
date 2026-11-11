@@ -44,7 +44,7 @@ BATTERY_STATE_MAP = {
 #
 # For check_levels targets:
 #   scale         — multiply raw SNMP int by this factor
-#   skip_zero     — when True, emit NaN instead of 0 (frequency w/o input)
+#   skip_zero     — when True, a 0 means no input: OK "no input", no metric
 #   metric_name   — prefixed metric name for perfdata
 #   render_func   — display formatter
 #   default_params — SimpleLevels format: {"levels_upper": ("fixed", (w,c))}
@@ -377,9 +377,9 @@ def _make_plugins(cfg):
                 )
                 return
             if cfg.get("skip_zero") and raw == 0:
-                value = float("nan")
-            else:
-                value = cfg.get("scale", 1.0) * raw
+                yield Result(state=State.OK, summary=f"{cfg['name']}: no input")
+                return
+            value = cfg.get("scale", 1.0) * raw
             yield from check_levels(
                 value=value,
                 levels_upper=params.get("levels_upper"),
