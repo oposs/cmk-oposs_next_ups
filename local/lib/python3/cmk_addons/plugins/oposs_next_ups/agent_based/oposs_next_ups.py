@@ -72,7 +72,7 @@ targets = [
         "keys": ["state"],
         "result": lambda obj, cfg: Result(
             state=State.UNKNOWN
-            if obj.state == "0"
+            if obj.state in ("0", "1")
             else State.WARN
             if obj.state in ("3", "5")
             else State.OK

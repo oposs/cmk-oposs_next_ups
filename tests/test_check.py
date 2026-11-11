@@ -333,7 +333,7 @@ def test_alarms_present_is_crit(plugins):
 
 @pytest.mark.parametrize("raw, state, summary", [
     ("0", State.UNKNOWN, "UNKNOWN state"),
-    ("1", State.CRIT, "UNKNOWN state"),          # MIB: unknown(1)
+    ("1", State.UNKNOWN, "UNKNOWN state"),       # MIB: unknown(1)
     ("2", State.OK, "Battery Normal"),
     ("3", State.WARN, "Battery Low"),
     ("4", State.CRIT, "Battery Depleted"),

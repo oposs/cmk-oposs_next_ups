@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 ### Fixed
+- The Battery State service went CRIT with "UNKNOWN state" when the UPS
+  reported its battery status as unknown (value 1). It now goes UNKNOWN,
+  as it already did for value 0.
 - In a Checkmk GUI set to a language other than English, the
   "Upper levels" and "Lower levels" fields of the NextUPS rules stayed
   in English. They are now translated like the rest of the rule form.
