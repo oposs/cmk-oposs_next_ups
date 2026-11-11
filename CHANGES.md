@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 ### Fixed
+
+## 0.2.1 - 2026-11-11
+### Fixed
 - A Phase RS/ST/TR Input or Output Frequency service showed "nan Hz" when
   the phase had no input. It now shows "no input" and stays OK, and it
   sends no value to the frequency graph while the input is missing.
