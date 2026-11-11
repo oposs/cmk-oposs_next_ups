@@ -18,7 +18,7 @@ Migrated from oegig-plugins to Checkmk 2.3.x v2 API.
 - `_make_plugins()` closure generates module-level variables via `globals()`
 - Each target gets its own `SimpleSNMPSection` + `CheckPlugin`
 - Two check patterns: state-mapping (Result) and check_levels (with params)
-- `skip_zero` flag on frequency targets: emits NaN when SNMP value is 0 (no input)
+- `skip_zero` flag on frequency targets: when the SNMP value is 0 (no input) the service is OK with "<name>: no input" and sends no metric
 - SNMP detection: OID `.1.3.6.1.4.1.21111.1.1.1.3.0` starts with `WPHVR3K0`
 - Metric prefix: `oposs_next_`
 - Custom WATO rulesets for checks with configurable thresholds

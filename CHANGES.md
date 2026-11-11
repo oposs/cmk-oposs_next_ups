@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 ### Fixed
+- A Phase RS/ST/TR Input or Output Frequency service showed "nan Hz" when
+  the phase had no input. It now shows "no input" and stays OK, and it
+  sends no value to the frequency graph while the input is missing.
+- The Battery State service went CRIT with "UNKNOWN state" when the UPS
+  reported its battery status as unknown (value 1). It now goes UNKNOWN,
+  as it already did for value 0.
 - In a Checkmk GUI set to a language other than English, the
   "Upper levels" and "Lower levels" fields of the NextUPS rules stayed
   in English. They are now translated like the rest of the rule form.
