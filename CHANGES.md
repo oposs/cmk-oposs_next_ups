@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 ### Fixed
+- In a Checkmk GUI set to a language other than English, the
+  "Upper levels" and "Lower levels" fields of the NextUPS rules stayed
+  in English. They are now translated like the rest of the rule form.
 
 ## 0.2.0 - 2026-11-09
 ### New
