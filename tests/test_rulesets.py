@@ -73,3 +73,23 @@ def test_services_sharing_a_rule_share_the_defaults(check_plugins):
             by_rule.setdefault(plugin.check_ruleset_name, []).append(plugin.check_default_parameters)
     for name, defaults in by_rule.items():
         assert all(d == defaults[0] for d in defaults), name
+
+
+@pytest.mark.parametrize("subdir", ["rulesets", "graphing"])
+def test_every_title_is_a_string_literal(subdir):
+    """Checkmk's translation extraction only finds Title("...") with a literal.
+
+    A Title built from a variable or an f-string shows up untranslated in a
+    localised GUI, because no catalogue entry exists for it.
+    """
+    import ast
+
+    bad = []
+    for path in sorted((PLUGIN / subdir).glob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text())):
+            if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id in ("Title", "Help", "Label", "Message")):
+                arg = node.args[0] if node.args else None
+                if not (isinstance(arg, ast.Constant) and isinstance(arg.value, str)):
+                    bad.append(f"{path.name}:{node.lineno}")
+    assert bad == []
